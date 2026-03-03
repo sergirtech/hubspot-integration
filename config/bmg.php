@@ -1,6 +1,8 @@
 <?php
 return[
+    //Url base de la API de BMG
     'base_url' => rtrim(env('BMG_BASE_URL',''), '/'),
-    'token' => env('BMG-TOKEN', ' '),
+    //Token para el uso de la API
+    'token' => env('BMG_TOKEN', null),
     ];
 
