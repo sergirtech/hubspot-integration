@@ -1,7 +1,12 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SyncController;
+use App\Http\Controllers\FilialController;
 
-// Esta ruta recibe el webhook de BMG
-// BMG hará POST a: https://tu-dominio.com/api/webhook/bmg
+// Webhook de BMG
 Route::post('/webhook/bmg', [SyncController::class, 'handleWebhook']);
+
+// CRUD de filiales — forzamos el parámetro a {filial}
+Route::apiResource('filiales', FilialController::class)->parameters([
+    'filiales' => 'filial'
+]);

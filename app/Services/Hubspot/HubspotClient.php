@@ -7,7 +7,7 @@ use App\Models\Editor;
 class HubspotClient
 {
     private string $baseUrl;
-    private string $token;
+    private ?string $token;
 
     public function __construct(){
         //Igual que BmgClient, pero letndo config/hubspot.php

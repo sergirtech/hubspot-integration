@@ -11,32 +11,24 @@ class SyncController extends Controller
     //Laravel inyecta automáticamente los servicios en el constructor
     //No es necesario hacer new BmgClient() de forma manual
     public function __construct(
-        private BmgClient $bmg,
-        private HubspotClient $hubspot
     ){}
 
     //Este metodo recibe el webhook de BMG
     //BMG mandará un POST con el cod_editor_bmg del editor nuevo
     public function handleWebhook(Request $request): \Illuminate\Http\JsonResponse
     {
-        //Validamos que el payload tiene el campo obligatorio
-        $validated=$request->validate([
-            'cod_editor_bmg'=>'required|string',
+        $validated = $request->validate([
+            'cod_editor_bmg'=> 'required|string',
+            //La filial viene en el webhook para saber de dónde es el editor
+            'filial=>required|string',
         ]);
-
-        //1. Obtenemos los datos completos del editor desde BMG
-        $data=$this->bmg->getEditor($validated['cod_editor_bmg']);
-
-        //2. Transformamos los datos al formato HubSpot
+        //Pasar la filial al BmgClient
+        $data=(new BmgClient($validated['filial']))->getEditor($validated['cod_editor_bmg']);
         $editor=new Editor($data);
-
-        //3. Creamos o actualizamos el contacto de HubSpot
-        $result=$this->hubspot->upsertContact($editor);
-
-        //4. Devolvemos respuesta OK a BMG
+        $result= $this->hubspot->upsertContact($editor);
         return response()->json([
             'success'=>true,
-            'hubspot_id' => $result['id']?? null,
+            'hubspot'=>$result['id']??null,
         ]);
     }
 }

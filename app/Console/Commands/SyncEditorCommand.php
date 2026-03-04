@@ -1,49 +1,41 @@
 <?php
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\Filial;
+use App\Models\Editor;
 use App\Services\Bmg\BmgClient;
 use App\Services\Hubspot\HubspotClient;
-use App\Models\Editor;
 
 class SyncEditorCommand extends Command
 {
-    //Así se llama el comando desde la terminal
-    //{codEditorBmg} es el argumento obligatorio
-    protected $signature = 'sync:editor {codEditorBmg}';
+    protected $signature = 'sync:editor {codEditorBmg} {filial}';
+    protected $description = 'Sincroniza manualmente un editor de BMG a HubSpot';
 
-    //Descripción que aparece en "php artisan list"
-    protected $description = 'Sincroniza un editor de BMG a HubSpot por su código';
+    public function handle(): int
+    {
+        $codEditorBmg = $this->argument('codEditorBmg');
+        $filialNombre = $this->argument('filial');
 
-    public function __construct(
-        private BmgClient $bmg,
-        private HubspotClient $hubspot
-    ){
-        parent::__construct();
-    }
+        // Buscamos la filial en la BD por su nombre
+        $filial = Filial::where('nombre', $filialNombre)->first();
 
-    //Este metodo se ejecuta cuando se llama al comando
-    public function handle():int{
-        //Recogemos el argumento que se pasa en la terminal
-        $codEditorBmg= $this->argument('codEditorBmg');
+        if (!$filial) {
+            $this->error("Filial '{$filialNombre}' no encontrada en la base de datos.");
+            return Command::FAILURE;
+        }
 
-        //Informamos al usuario que empieza el proceso
-        $this->info('Sincronizando editor {codEditorBmg}...');
+        $this->info("Sincronizando editor {$codEditorBmg} de filial {$filialNombre}...");
 
-        //1. Obtenemos datos de BMG
-        $data=$this->bmg->getEditor($codEditorBmg);
+        $bmg     = new BmgClient($filial);
+        $hubspot = new HubspotClient();
 
-        //2. Transformamos los datos
-        $editor=new Editor($data);
+        $data   = $bmg->getEditor($codEditorBmg);
+        $editor = new Editor($data);
+        $result = $hubspot->upsertContact($editor);
 
-        //3. Enviamos a HubSpot
-        $result=$this->hubspot->upsertContact($editor);
+        $this->info("✅ Sincronizado. HubSpot ID: " . ($result['id'] ?? 'desconocido'));
 
-        //Mensaje de éxito con el ID que devuelve HubSpot
-        $this->info("✅ Editor sincronizado. HubSpot ID: " . ($result['id'] ?? 'desconocido'));
-
-        // Command::SUCCESS=0 INDICA QUE EVVERYTHING OK
         return Command::SUCCESS;
     }
 }
