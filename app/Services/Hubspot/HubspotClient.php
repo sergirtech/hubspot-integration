@@ -19,21 +19,30 @@ class HubspotClient
     //upset=update+insert(si existe actualiza, si no crea)
 
     public function upsertContact(Editor $editor): array{
-        //La API de HubSpot espera los datos dentro de "properties"
-        $payload=[
-            'properties'=>$editor->toHubspot(),
-        ];
+       $payload=[
+        'properties'=>$editor->toHubspot(),
+       ];
 
-        //Hacemos POST a HubSpot
-        //withToken() añade: Authorization:Bearer MI_TOKEN
-        $response=Http::withToken($this->token)
-            ->post($this->baseUrl . '/crm/v3/objects/contacts', $payload);
+       //Intentar atualizar el contacto existente buscando por email
+       //Hacemos patch con ?idProperty=email le dice a HubSpot que busque por ese campo
+       $updateResponse= Http::withToken($this->token)
+       ->patch($this->baseUrl . '/crm/v3/objects/contacts' . urldecode($editor->email) . '?idProperty=email', $payload);
 
-        //Si HubSpot devuelve error, lanzar excepcion
-        if($response->failed()){
-            throw new \Exception('HubSpot error: '.$response->body());
+       //Si el contacto existe, HubSpot devuelve 200 y el contacto actualizado
+       if($updateResponse->successful()){
+        return $updateResponse ->json();
+       }
+       //Si HubSot devuelve 404, el contacto no existe, creamos uno nuevo
+       if($updateResponse->status() === 404){
+        $createResponse= Http::withToken($this->token)
+        ->post($this->baseUrl . '/crm/v3/objects/contacts', $payload);
+        if($createResponse->failed()){
+            throw new \Exception('Error al crear contacto:  '.$createResponse->body());
         }
-        //Devolvemos la respuesta de HubSpot como array
-        return $response->json();
+        return $createResponse->json();
+       }
+
+       //Gestionamos cualquier otro código de error (401,501...)
+       throw new \Exception('Error en upsert: '.$updateResponse->body());
     }
 }
