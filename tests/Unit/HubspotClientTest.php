@@ -1,19 +1,19 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use App\Models\Editor;
 use App\Services\Hubspot\HubspotClient;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-class HubspotClientTest extends Testase{
+class HubspotClientTest extends TestCase{
     private function editorFake():Editor{
         return new Editor([
             'cod_editor_bmg'=>'ED001',
-            'nombre_fiscal'='Juan',
+            'nombre_fiscal'=>'Juan',
             'apellidos'=>'García',
-            'tipo_editor' ='autonomo',
+            'tipo_editor'=>'autonomo',
             'filial'=>'espana',
             'domicilios'=>[
                 ['calle'=>'Calle Mayor','numero'=>'10','codigo_postal'=>'28001'],
@@ -24,7 +24,7 @@ class HubspotClientTest extends Testase{
             ],
             'num_titulos'=>10,
             'num_titulos_activos'=>8,
-            'total_ventas_eur'=500.00,
+            'total_ventas_eur'=>500.00,
             'unidades_vendidas'=>50,
             'ultima_fecha_venta'=>'2026-01-01',
         ]);
@@ -79,7 +79,7 @@ class HubspotClientTest extends Testase{
 
         Http::fake([
             '*/contacts/juan%40test.com*'=>Http::response([],404),
-            '*/contacts'=> Http::response(['message'=>'Bad request'],400);
+            '*/contacts'=> Http::response(['message'=>'Bad request'],400),
         ]);
         $this->clienteConToken()->upsertContact($this->editorFake());
     }
@@ -89,11 +89,11 @@ class HubspotClientTest extends Testase{
         $this->expectException(\Exception::class);
         $this->expectExceptionMessageMatches('/Error en upsert/');
 
-        Htto::fake([
-            '*/contacts/*'=> Http:response(['message'=>'Unauthorized'],401)
+        Http::fake([
+            '*/contacts/*'=> Http::response(['message'=>'Unauthorized'],401)
         ]);
 
-        $this-clienteConToken()->upsertContact($this->editorFake());
+        $this->clienteConToken()->upsertContact($this->editorFake());
     }
 
     /**@test */

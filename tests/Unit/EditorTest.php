@@ -9,7 +9,7 @@ class EditorTest extends TestCase{
     private function datos():array{
         return[
             'cod_editor_bmg'=>'ED001',
-            'nombre_fiscal'=>'Juan'
+            'nombre_fiscal'=>'Juan',
             'apellidos'=>'García López',
             'tipo_editor'=>'autónomo',
             'filial'=>'espana',
@@ -21,18 +21,18 @@ class EditorTest extends TestCase{
                 ['contacto'=>'+34600000001'],
             ],
             'num_titulos'=>100,
-            'num_titulos_activos'=80,
+            'num_titulos_activos'=>80,
             'total_vendas_eur'=>10000.00,
             'unidades_vendidas'=>1000,
             'ultima_fecha_venta'=>'2026-01-15',
                 
-        ],
+        ];
     }
-    /**@test */
+    /** @test */
     public function mapea_campos_de_contacto_correctamente():void{
         $editor=new Editor($this->datos());
 
-        $this->asertSame('Juan',$editor->firstname);
+        $this->assertSame('Juan',$editor->firstname);
         $this->assertSame('García López',$editor->lastname);
         $this->assertSame('juan@test.com',$editor->email);
         $this->assertSame('+34600000001',$editor->phone);
@@ -42,13 +42,13 @@ class EditorTest extends TestCase{
         $this->assertSame('autonomo',$editor->tipo_editor);
     }
 
-    /**@test */
+    /** @test */
     public function construye_direccion_concatenando_calle_y_numero():void{
         $editor= new Editor($this->datos());
         $this->assertSame('Calle Mayor 10', $editor->address);
     }
 
-    /**@test */
+    /** @test */
     public function mapea_campos_numericos_correctamente():void{
         $editor=new Editor($this->datos());
 
@@ -59,7 +59,7 @@ class EditorTest extends TestCase{
         $this.assertSame('2026-01-15',$editor->ultima_fecha_venta);
     }
 
-    /**@test */
+    /** @test */
     public function usa_valores_por_defecto_cuando_faltan_campos():void{
         $editor=new Editor([
             'domicilios'=>[[]],
@@ -79,7 +79,7 @@ class EditorTest extends TestCase{
         $this.assertSame('',$editor->ultima_fecha_venta);
     }
 
-    /**@test */
+    /** @test */
     public function to_hubspot_devuelve_todos_los_campos_esperados():void{
         $editor=new Editor($this->datos());
         $payload=$editor->tohubspot();
@@ -96,7 +96,7 @@ class EditorTest extends TestCase{
         }
     }
 
-    /**@test*/
+    /** @test */
     public function to_hubspot_contiene_los_valores_correctos():void{
         $editor=new Editor($this->datos());
         $payload=$editor->toHubspot();
