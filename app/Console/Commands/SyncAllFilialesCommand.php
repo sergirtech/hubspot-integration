@@ -7,6 +7,7 @@ use App\Models\Editor;
 use App\Services\Bmg\BmgClient;
 use App\Services\Hubspot\HubspotClient;
 
+//ESTE ES EL COMANDO QUE SE EJECUTARA PERIÓDICAMENTE EN BMG
 class SyncAllFilialesCommand extends Command
 {
     // Comando para sincronizar todas las filiales activas

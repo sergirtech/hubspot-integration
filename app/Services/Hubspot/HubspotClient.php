@@ -10,23 +10,27 @@ class HubspotClient
     private ?string $token;
 
     public function __construct(){
-        //Igual que BmgClient, pero letndo config/hubspot.php
+        //Igual que BmgClient, pero leyendo config/hubspot.php
         $this->baseUrl = config('hubspot.base_url');
         $this->token=config('hubspot.token');
+
+        if(empty($this->token)){
+            throw new \Exception('HUBSPOT_TOKEN no configurado en el archivo .env');
+    }
     }
 
     //Recibe un objeto Editor y lo crea/actualiza en HubSpot
     //upset=update+insert(si existe actualiza, si no crea)
 
     public function upsertContact(Editor $editor): array{
-       $payload=[
+       $payload=[   
         'properties'=>$editor->toHubspot(),
        ];
 
        //Intentar atualizar el contacto existente buscando por email
        //Hacemos patch con ?idProperty=email le dice a HubSpot que busque por ese campo
        $updateResponse= Http::withToken($this->token)
-       ->patch($this->baseUrl . '/crm/v3/objects/contacts' . urldecode($editor->email) . '?idProperty=email', $payload);
+       ->patch($this->baseUrl . '/crm/v3/objects/contacts/' . urlencode($editor->email) . '?idProperty=email', $payload);
 
        //Si el contacto existe, HubSpot devuelve 200 y el contacto actualizado
        if($updateResponse->successful()){

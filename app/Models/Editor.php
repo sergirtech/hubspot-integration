@@ -24,13 +24,13 @@ class Editor
 
     //Constructor recibe array $data que devuelve BMG y extrae solo los campos que nos interesan
     public function __construct(array $data){
-        $this->firstname = $data['nombre_fiscal'];
+        $this->firstname = $data['nombre_fiscal'] ?? '';
         $this->lastname= $data['apellidos']?? ''; //campo a comfirmar cuando tengamos BMG
         $this->address = trim(($data['domicilios'][0]['calle']?? '').' '.($data['domicilios'][0]['numero']?? ''));
-        $this->email = $data['contactos'][0]['contacto']?? null;
-        $this->phone = $data['contactos'][1]['contacto']?? null;
-        $this->zip = $data['domicilios'][0]['codigo_postal']?? null;
-        $this->codeditorbmg = $data['cod_editor_bmg'];
+        $this->email = $data['contactos'][0]['contacto']?? '';
+        $this->phone = $data['contactos'][1]['contacto']?? '';
+        $this->zip = $data['domicilios'][0]['codigo_postal']?? '';
+        $this->codeditorbmg = $data['cod_editor_bmg'] ?? '';
         $this->filial = $data['filial'] ?? ''; //campo a comfirmar cuando tengamos BMG
         $this->tipo_editor = $data['tipo_editor'] ?? ''; //campo a comfirmar cuando tengamos BMG
         
@@ -38,7 +38,7 @@ class Editor
         $this->num_titulos = $data['num_titulos'] ?? 0;
         $this->num_titulos_activos = $data['num_titulos_activos'] ?? 0;
         $this->total_ventas_eur = $data['total_ventas_eur'] ?? 0.0;
-        $this->unidades_vendidas = $data ['unidades_vendidas'] ?? 0;
+        $this->unidades_vendidas = $data['unidades_vendidas'] ?? 0;
         $this->ultima_fecha_venta = $data['ultima_fecha_venta'] ?? '';
     }
 
@@ -55,7 +55,7 @@ class Editor
             'tipo_editor' => $this->tipo_editor,
             'num_titulos'=>$this->num_titulos,
             'num_titulos_activos'=> $this->num_titulos_activos,
-            'total_ventas_eur'=> $this -> total_ventas_eur,
+            'total_ventas_eur'=> $this ->total_ventas_eur,
             'unidades_vendidas'=> $this->unidades_vendidas,
             'ultima_fecha_venta'=> $this->ultima_fecha_venta,
         ];

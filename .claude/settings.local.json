@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm \"c:\\\\Users\\\\sergi\\\\Documents\\\\hubspot-integration\\\\app\\\\Http\\\\Controllers\\\\SyncController.php\")",
+      "Bash(rm \"c:\\\\Users\\\\sergi\\\\Documents\\\\hubspot-integration\\\\app\\\\Http\\\\Controllers\\\\FilialController.php\")",
+      "Bash(rm \"c:\\\\Users\\\\sergi\\\\Documents\\\\hubspot-integration\\\\config\\\\bmg.php\")"
+    ]
+  }
+}
