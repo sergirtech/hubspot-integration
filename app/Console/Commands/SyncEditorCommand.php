@@ -36,6 +36,6 @@ class SyncEditorCommand extends Command
 
         $this->info("✅ Sincronizado. HubSpot ID: " . ($result['id'] ?? 'desconocido'));
 
-        return Command::SUCCESS;
+        return Command::SUCCESS;    
     }
 }

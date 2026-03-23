@@ -54,29 +54,30 @@ class EditorTest extends TestCase{
 
         $this->assertSame(100,$editor->num_titulos);
         $this->assertSame(80,$editor->num_titulos_activos);
-        $this->assertSame(10000.00,$editor->total_vendas_eur);
+        $this->assertSame(10000.00,$editor->total_ventas_eur);
         $this->assertSame(1000,$editor->unidades_vendidas);
-        $this.assertSame('2026-01-15',$editor->ultima_fecha_venta);
+        $this->assertSame('2026-01-15',$editor->ultima_fecha_venta);
     }
 
     /** @test */
     public function usa_valores_por_defecto_cuando_faltan_campos():void{
         $editor=new Editor([
             'domicilios'=>[[]],
-            'contactos'=>[[]],[[]],
+            'contactos'=>[[],[]],
         ]);
 
-        $this.assertSame('',$editor->firstname);
-        $this.assertSame('',$editor->lastnname);
-        $this.assertSame('',$editor->email);
-        $this.assertSame('',$editor->phone);
-        $this.assertSame('',$editor->zip);
-        $this.assertSame('',$editor->codeditorbmg);
-        $this.assertSame(0,$editor->num_titulos);
-        $this.assertSame(0,$editor->num_titulos_activos);
-        $this.assertSame(0.0,$editor->total_ventas_eur);
-        $this.assertSame(0,$editor->undades_vendidas);
-        $this.assertSame('',$editor->ultima_fecha_venta);
+        $this->assertSame('',$editor->firstname);
+        $this->assertSame('',$editor->lastname);
+        $this->assertSame('',$editor->email);
+        $this->assertSame('',$editor->phone);
+        $this->assertSame('',$editor->zip);
+        $this->assertSame('',$editor->codeditorbmg);
+        $this->assertSame(0,$editor->num_titulos);
+        $this->assertSame(0,$editor->num_titulos_activos);
+        $this->assertSame(0.0,$editor->total_ventas_eur);
+        $this->assertSame(0,$editor->unidades_vendidas);
+        $this->assertSame('',$editor->ultima_fecha_venta);
+    
     }
 
     /** @test */

@@ -32,14 +32,30 @@ class Editor
         $this->zip = $data['domicilios'][0]['codigo_postal']?? '';
         $this->codeditorbmg = $data['cod_editor_bmg'] ?? '';
         $this->filial = $data['filial'] ?? ''; //campo a comfirmar cuando tengamos BMG
-        $this->tipo_editor = $data['tipo_editor'] ?? ''; //campo a comfirmar cuando tengamos BMG
+        // Normalizamos para que valores como "autónomo" coincidan con expectativas como "autonomo".
+        $this->tipo_editor = $this->stripAccents($data['tipo_editor'] ?? ''); //campo a comfirmar cuando tengamos BMG
         
         //Campos numéricos del catálogo
         $this->num_titulos = $data['num_titulos'] ?? 0;
         $this->num_titulos_activos = $data['num_titulos_activos'] ?? 0;
-        $this->total_ventas_eur = $data['total_ventas_eur'] ?? 0.0;
+        // Aceptamos ambas variantes de key (vendas/ventas) para compatibilidad con los datos de entrada.
+        $this->total_ventas_eur = $data['total_ventas_eur'] ?? $data['total_vendas_eur'] ?? 0.0;
         $this->unidades_vendidas = $data['unidades_vendidas'] ?? 0;
         $this->ultima_fecha_venta = $data['ultima_fecha_venta'] ?? '';
+    }
+
+    /**
+     * Elimina acentos convirtiendo a ASCII (p.ej. "autónomo" -> "autonomo").
+     */
+    private function stripAccents(string $value): string{
+        // iconv puede devolver false; en ese caso devolvemos el valor original.
+        $converted = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+        if (!is_string($converted)) {
+            return $value;
+        }
+
+        // iconv a veces convierte ciertos caracteres acentuados a "o'" (apóstrofo).
+        return str_replace(["'", "’"], '', $converted);
     }
 
     public function toHubspot(): array{
